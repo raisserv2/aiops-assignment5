@@ -171,4 +171,4 @@ lecture notebooks (churn example). The code here is written for the ETA problem;
 
 ## Demo video
 
-DEMO_VIDEO_LINK
+https://drive.google.com/file/d/1pr9XJtAyQJNelbfCuKN66DPytJrkc5bR/view?usp=sharing
