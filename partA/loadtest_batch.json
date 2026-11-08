@@ -1,0 +1,36 @@
+{
+  "batch_1": {
+    "concurrency": 1,
+    "requests": 1619,
+    "rps": 404.8,
+    "p50_ms": 2.4,
+    "p95_ms": 2.7,
+    "p99_ms": 4.0,
+    "errors": 0,
+    "replicas": 1,
+    "versions": {
+      "v1": 1619
+    },
+    "rows_per_request": 1,
+    "ms_per_request_mean": 2.47,
+    "ms_per_row": 2.4704,
+    "rows_per_s": 404.8
+  },
+  "batch_100": {
+    "concurrency": 1,
+    "requests": 1283,
+    "rps": 320.8,
+    "p50_ms": 3.1,
+    "p95_ms": 3.4,
+    "p99_ms": 3.9,
+    "errors": 0,
+    "replicas": 1,
+    "versions": {
+      "v1": 1283
+    },
+    "rows_per_request": 100,
+    "ms_per_request_mean": 3.117,
+    "ms_per_row": 0.0312,
+    "rows_per_s": 32080.0
+  }
+}

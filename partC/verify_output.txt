@@ -1,0 +1,45 @@
+
+=== setup ===
+Ray cluster resources: CPU=2.0
+deployed with weight=0.2; {"weight": 0.2, "prod_replicas": 2, "candidate_autoscaling": {"min_replicas": 1, "max_replicas": 3, "target_ongoing_requests": 2, "upscale_delay_s": 5, "downscale_delay_s": 60}, "cpu_per_replica": 0.25}
+replica states: {'EtaModel_prod': {'RUNNING': 2}, 'EtaModel_candidate': {'RUNNING': 1}, 'Router': {'RUNNING': 1}}
+CPU reserved by the app: 1.00 of 2 (router 0.25 + prod 2x0.25 + candidate 1x0.25 at min)
+worst case at max autoscaling: 1.50 CPU <= 2 -> fits
+
+=== (a) share of customers on the candidate, weight=0.2, 1000 ids ===
+1000 customers in 8.6s -> candidate share = 0.203 (v2=203, v1=797)
+PASS (a)
+
+=== (b) 200 customers, second call gets the same arm ===
+compared 200 customers: 0 changed arm; e.g. cust-0000:v2->v2, cust-0001:v2->v2, cust-0002:v1->v1, cust-0003:v1->v1, cust-0004:v1->v1
+PASS (b)
+
+=== (c) redeploy the identical app, all 1000 customers keep their arm ===
+application deleted; replicas: []
+redeployed; replica states: {'EtaModel_prod': {'RUNNING': 2}, 'EtaModel_candidate': {'RUNNING': 1}, 'Router': {'RUNNING': 1}}
+after redeploy: 0 of 1000 customers changed arm
+PASS (c)
+
+=== (d) raise weight 0.2 -> 0.5: nobody on the candidate moves back to prod ===
+config now: 0.5
+candidate share now 0.513; previously-v2 customers: 203, moved back to v1: 0, newly moved v1->v2: 310
+PASS (d)
+
+=== (e) header X-Beta: 1 forces the candidate for 50 requests ===
+50 prod customers with X-Beta: 1 -> arms ['v2']; same customers without header -> ['v1']
+PASS (e)
+
+=== extra: bucketing is stable across processes, Python hash() is not ===
+PYTHONHASHSEED=1: sha256 buckets / hash()%1000 -> [0.02308, 0.01931] [226, 739]
+PYTHONHASHSEED=2: sha256 buckets / hash()%1000 -> [0.02308, 0.01931] [142, 375]
+
+=== extra: autoscaling demo (not an assertion): candidate under load, extra_work_ms=30 ===
+  t+ 6s candidate replicas: {'RUNNING': 1}
+  t+11s candidate replicas: {'RUNNING': 1}
+  t+16s candidate replicas: {'RUNNING': 1}
+  t+21s candidate replicas: {'RUNNING': 1}
+  t+25s candidate replicas: {'RUNNING': 1}
+  sent 750 requests to the candidate in 25 s with 8 concurrent clients
+
+=== RESULT ===
+ALL CHECKS PASSED (a) (b) (c) (d) (e)

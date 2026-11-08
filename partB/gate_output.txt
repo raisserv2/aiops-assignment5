@@ -1,0 +1,24 @@
+### Registry (MLflow model eta-model)
+ version   aliases bundle   run_id
+       1      prod     v1 0598ef6c
+       2 candidate     v2 7d1cbb4d
+
+### promotion_gate() with default thresholds
+thresholds: defaults
+  prod_metrics  mae=11.955  mae_rush=19.680  mae_rain=11.623  p95_ms=1.481  (rows=2000, rush=571, rain=994)
+  cand_metrics  mae=6.105  mae_rush=8.580  mae_rain=6.285  p95_ms=1.429  (rows=2000, rush=571, rain=994)
+  PASS  mae_gain      value=0.4894  threshold >= 0.03
+  PASS  latency_p95   value=1.429  threshold <= 10.0 ms
+  PASS  slice_rush    value=-0.564  threshold <= +0.05
+  PASS  slice_rain    value=-0.4592  threshold <= +0.05
+  PROMOTE = True
+
+### promotion_gate(min_rel_gain=0.60)
+thresholds: {'min_rel_gain': 0.6}
+  prod_metrics  mae=11.955  mae_rush=19.680  mae_rain=11.623  p95_ms=1.444  (rows=2000, rush=571, rain=994)
+  cand_metrics  mae=6.105  mae_rush=8.580  mae_rain=6.285  p95_ms=1.398  (rows=2000, rush=571, rain=994)
+  FAIL  mae_gain      value=0.4894  threshold >= 0.6
+  PASS  latency_p95   value=1.398  threshold <= 10.0 ms
+  PASS  slice_rush    value=-0.564  threshold <= +0.05
+  PASS  slice_rain    value=-0.4592  threshold <= +0.05
+  PROMOTE = False

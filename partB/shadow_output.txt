@@ -1,0 +1,16 @@
+prod (alias prod -> v1) on :5101, candidate (alias candidate -> v2) on :5102; same 200 rows of data/eta_fresh.csv, one row per request
+/home/raisser/miniconda3/envs/a5/lib/python3.10/site-packages/mlflow/pyfunc/utils/data_validation.py:187: UserWarning: [33mAdd type hints to the `predict` method to enable data validation and automatic signature inference during model logging. Check https://mlflow.org/docs/latest/model/python_model.html#type-hint-usage-in-pythonmodel for more details.[0m
+  color_warning(
+n_requests_each          200
+prod_model_version       ['v1']
+cand_model_version       ['v2']
+mean_abs_diff_min        9.484
+pct_diff_gt_10_min       35.0
+max_abs_diff_min         51.7
+prod_p50_ms              4.01
+prod_p95_ms              5.27
+cand_p50_ms              3.97
+cand_p95_ms              5.92
+prod_mae_vs_truth_min    11.425
+cand_mae_vs_truth_min    6.105
+{"n_requests_each": 200, "prod_model_version": ["v1"], "cand_model_version": ["v2"], "mean_abs_diff_min": 9.484, "pct_diff_gt_10_min": 35.0, "max_abs_diff_min": 51.7, "prod_p50_ms": 4.01, "prod_p95_ms": 5.27, "cand_p50_ms": 3.97, "cand_p95_ms": 5.92, "prod_mae_vs_truth_min": 11.425, "cand_mae_vs_truth_min": 6.105}

@@ -1,0 +1,56 @@
+##### 1) Part A serving v1, expecting v1 (should PASS)
+smoke test against http://127.0.0.1:8000  expect-version=v1  max-p95=80.0 ms
+
+[PASS] 1 health endpoint                      HTTP 200 {"status":"ok","model_version":"v1"}
+[PASS] 2 version + response schema            HTTP 200, model_version='v1', predictions=[66.4, 169.6, 5.3]
+[PASS] 3 predictions in plausible range       predictions for 1/20/80/200 km = [17.4, 66.4, 221.2, 530.7] (expected 1..1000 min)
+[PASS] 4 deterministic, order preserved       batch=[238.3, 7.8, 135.4] singles=[238.3, 7.8, 135.4] repeat=[238.3, 7.8, 135.4]
+[PASS] 5 sanity: longer distance not faster   km 5->27.7, 20->66.4, 50->143.8, 100->272.7, 150->401.7
+[PASS] 6 sanity: heavy traffic not faster     40 km: traffic 0.05 -> 107.3 min, traffic 0.95 -> 145.8 min
+[PASS] 7 sanity: more stops not faster        30 km: 2 stops -> 79.2 min, 18 stops -> 148.4 min
+[PASS] 8 invalid input -> 422                 hour=24 / rain=2 / weight<0 / empty batch -> [422, 422, 422, 422]
+[PASS] 9 infeasible delivery -> 422           HTTP 422 {"error":"validation_failed","details":[{"field":"instances.0","msg":"Value error, infeasi
+[PASS] 10 X-Request-ID echoed                 sent smoke-f8f30987, header smoke-f8f30987, body smoke-f8f30987
+[PASS] 11 latency p95 <= 80 ms                100 single-row requests: p50=2.5 ms p95=4.4 ms
+
+11 passed, 0 failed, 0 skipped
+RELEASE GATE: OPEN (exit 0)
+exit code: 0
+
+##### 2) Part A serving v2, expecting v2 (should PASS)
+smoke test against http://127.0.0.1:8001  expect-version=v2  max-p95=80.0 ms
+
+[PASS] 1 health endpoint                      HTTP 200 {"status":"ok","model_version":"v2"}
+[PASS] 2 version + response schema            HTTP 200, model_version='v2', predictions=[68.0, 148.6, 17.5]
+[PASS] 3 predictions in plausible range       predictions for 1/20/80/200 km = [23.0, 68.0, 196.5, 348.0] (expected 1..1000 min)
+[PASS] 4 deterministic, order preserved       batch=[240.2, 19.0, 138.3] singles=[240.2, 19.0, 138.3] repeat=[240.2, 19.0, 138.3]
+[PASS] 5 sanity: longer distance not faster   km 5->29.3, 20->68.0, 50->134.9, 100->248.7, 150->348.0
+[PASS] 6 sanity: heavy traffic not faster     40 km: traffic 0.05 -> 91.4 min, traffic 0.95 -> 154.8 min
+[PASS] 7 sanity: more stops not faster        30 km: 2 stops -> 80.4 min, 18 stops -> 144.9 min
+[PASS] 8 invalid input -> 422                 hour=24 / rain=2 / weight<0 / empty batch -> [422, 422, 422, 422]
+[PASS] 9 infeasible delivery -> 422           HTTP 422 {"error":"validation_failed","details":[{"field":"instances.0","msg":"Value error, infeasi
+[PASS] 10 X-Request-ID echoed                 sent smoke-7e6f3617, header smoke-7e6f3617, body smoke-7e6f3617
+[PASS] 11 latency p95 <= 80 ms                100 single-row requests: p50=3.2 ms p95=4.9 ms
+
+11 passed, 0 failed, 0 skipped
+RELEASE GATE: OPEN (exit 0)
+exit code: 0
+
+##### 3) wrong version deployed: serving v2 but release expects v1 (should FAIL -> exit 1)
+smoke test against http://127.0.0.1:8001  expect-version=v1  max-p95=80.0 ms
+
+[PASS] 1 health endpoint                      HTTP 200 {"status":"ok","model_version":"v2"}
+[FAIL] 2 version + response schema            HTTP 200, model_version='v2', predictions=[68.0, 148.6, 17.5]
+[PASS] 3 predictions in plausible range       predictions for 1/20/80/200 km = [23.0, 68.0, 196.5, 348.0] (expected 1..1000 min)
+[PASS] 4 deterministic, order preserved       batch=[240.2, 19.0, 138.3] singles=[240.2, 19.0, 138.3] repeat=[240.2, 19.0, 138.3]
+[PASS] 5 sanity: longer distance not faster   km 5->29.3, 20->68.0, 50->134.9, 100->248.7, 150->348.0
+[PASS] 6 sanity: heavy traffic not faster     40 km: traffic 0.05 -> 91.4 min, traffic 0.95 -> 154.8 min
+[PASS] 7 sanity: more stops not faster        30 km: 2 stops -> 80.4 min, 18 stops -> 144.9 min
+[PASS] 8 invalid input -> 422                 hour=24 / rain=2 / weight<0 / empty batch -> [422, 422, 422, 422]
+[PASS] 9 infeasible delivery -> 422           HTTP 422 {"error":"validation_failed","details":[{"field":"instances.0","msg":"Value error, infeasi
+[PASS] 10 X-Request-ID echoed                 sent smoke-45bf6261, header smoke-45bf6261, body smoke-45bf6261
+[PASS] 11 latency p95 <= 80 ms                100 single-row requests: p50=2.5 ms p95=4.4 ms
+
+10 passed, 1 failed, 0 skipped
+RELEASE GATE: CLOSED (exit 1): 2 version + response schema
+exit code: 1
